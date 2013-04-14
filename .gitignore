@@ -1,0 +1,5 @@
+# Ignore Project Files
+ga/bin
+ga/obj
+ga/properties
+#*.xcbkptlist
