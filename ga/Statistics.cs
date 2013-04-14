@@ -40,7 +40,7 @@ namespace ga
 
 		public void print()
 		{
-			System.Console.WriteLine("***************** Genetic Algorithm Results ******************", null);
+			System.Console.WriteLine("\n***************** Genetic Algorithm Results ******************", null);
 			System.Console.WriteLine("Population Cap={0}", Program.MAX_POPULATION);
 			System.Console.WriteLine("Generation Cap={0}", Program.GENERATION_CAP);
 			System.Console.WriteLine("Mutation Rate={0}", Program.MUTATION_RATE);
@@ -51,14 +51,14 @@ namespace ga
 			System.Console.WriteLine("BEST LMSE = {0}", BEST_LMSE);
 			System.Console.WriteLine("Total Mutations={0}", mutations);
 
-			int best_gen = -1;
-			for (int count = 0; count < _generation_best.Count(); ++count)
-			{
-				System.Console.WriteLine("Generation {0} Best = {1}", count, _generation_best[count]);
-				System.Console.WriteLine("Generation {0} Avg = {1}", count, _generation_avgs[count]);
-				if (_generation_best[count] == BEST_LMSE) { best_gen = count; }
-			}
-			System.Console.WriteLine("Best Generation = {0}",best_gen);
+//			int best_gen = -1;
+//			for (int count = 0; count < _generation_best.Count(); ++count)
+//			{
+//				System.Console.WriteLine("Generation {0} Best = {1}", count, _generation_best[count]);
+//				System.Console.WriteLine("Generation {0} Avg = {1}", count, _generation_avgs[count]);
+//				if (_generation_best[count] == BEST_LMSE) { best_gen = count; }
+//			}
+//			System.Console.WriteLine("Best Generation = {0}",best_gen);
 
 		}
 

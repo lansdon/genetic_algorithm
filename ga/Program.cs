@@ -25,10 +25,10 @@ namespace ga
             System.Console.WriteLine("Hello, World!");
 			
 			// ********************** Settings ***********************
-			MAX_POPULATION = 100;		// Max population    > 0
-			MUTATION_RATE = 0.03;   // Percent of coefficients that undergo mutation  [0.0, 1.0]
-			MUTATION_RANGE = 0.02;	// Maximum amount a coefficient can be mutated based on original max potential values (a-e = [0,10], f-i = [0,1.0])
-			GENERATION_CAP = 100;		// Number of generations to spawn
+			MAX_POPULATION = 20;		// Max population    > 0
+			MUTATION_RATE = 0.01;   // Percent of coefficients that undergo mutation  [0.0, 1.0]
+			MUTATION_RANGE = 0.004;	// Maximum amount a coefficient can be mutated based on original max potential values (a-e = [0,10], f-i = [0,1.0])
+			GENERATION_CAP = 100000;		// Number of generations to spawn
 
 			
 			// ******************** Vars ***************************
@@ -41,7 +41,7 @@ namespace ga
             // Load CSV File
             CsvReader csv = new CsvReader(new StreamReader("ConcErlangData.csv"));
 			_knownData = new List<Coord_Pair>(csv.GetRecords<Coord_Pair>());
-			System.Console.WriteLine("Field Count ={0}", _knownData.Count());
+//			System.Console.WriteLine("Field Count ={0}", _knownData.Count());
 
 			// Genetic Algorithm Start
 			ga = new Genetics(ref _knownData);

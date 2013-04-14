@@ -37,16 +37,12 @@ namespace ga
 //			print();
         }
 
-		// Implement the generic CompareTo method with the Temperature  
-		// class as the Type parameter.  
-		// 
+		// Implement the generic CompareTo method 
 		public int CompareTo(Equation_Parameters other)
 		{
 			// If other is not a valid object reference, this instance is greater. 
 			if (other == null) return 1;
 
-			// The temperature comparison depends on the comparison of  
-			// the underlying Double values.  
 			return lmse.CompareTo(other.lmse);
 		}
 
@@ -90,14 +86,12 @@ namespace ga
 
 		public double calculate_lmse(ref List<Coord_Pair> knownData)
         {
-            // F*math:sin(A*X_k) + G*math:sin(B*X_k) + H*math:sin(C*X_k) + I*math:sin(D*X_k) + J*math:sin(E*X_k)
 			double sum = 0;
 			foreach (Coord_Pair kd in knownData)
 			{
 				double calculated = f * Math.Sin(a * kd.X) + g * Math.Sin(b * kd.X) + h * Math.Sin(c * kd.X) + i * Math.Sin(d * kd.X) + j * Math.Sin(e * kd.X);
 				sum += Math.Pow((kd.Y - calculated), 2);
 			}
-
             return sum/knownData.Count();
         }
 

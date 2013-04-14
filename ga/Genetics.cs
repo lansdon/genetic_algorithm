@@ -23,11 +23,12 @@ namespace ga
 		public void nextGeneration(ref List<Equation_Parameters> population, ref Random rand)
 		{
 			List<Equation_Parameters> breeders = getBreedersFromPopulation(ref population);
-			Program.printPopulationList("Breeders", ref breeders);
+//			Program.printPopulationList("Breeders", ref breeders);
 			List<Equation_Parameters> offspring = generateOffspring(ref breeders, ref rand);
-			Program.printPopulationList("Mutated Offspring", ref offspring);
+//			Program.printPopulationList("Mutated Offspring", ref offspring);
 			population = new List<Equation_Parameters>(offspring.Concat<Equation_Parameters>(breeders));
-			Program.printPopulationList("Next Generation", ref population);
+			System.Console.Write(".");
+//			Program.printPopulationList("Next Generation", ref population);
 		}
 
 
@@ -37,7 +38,7 @@ namespace ga
 		private List<Equation_Parameters> getBreedersFromPopulation(ref List<Equation_Parameters> population)
 		{
 			population.Sort();
-			Program.printPopulationList("Sorted Population", ref population);
+//			Program.printPopulationList("Sorted Population", ref population);
 			return population.GetRange(0, population.Count()/2);
 		}
 
@@ -77,12 +78,10 @@ namespace ga
 				offspring.Add(child);
 			}
 
-
-
+			// Mutations on offspring
 			mutateOffspring(ref offspring, ref rand);
 
 			return offspring;
-
 		}
 
 
