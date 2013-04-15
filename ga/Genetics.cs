@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ga
@@ -14,17 +15,19 @@ namespace ga
 		// 4) Perform mutations
 
 		private List<Coord_Pair> _knownData;
+		private Random rand;
 
-		public Genetics( ref List<Coord_Pair> knownData)
+		public Genetics( ref List<Coord_Pair> knownData, ref Random rand)
 		{
 			_knownData = knownData;
+			this.rand = rand;
 		}
 
-		public void nextGeneration(ref List<Equation_Parameters> population, ref Random rand)
+		public void nextGeneration(ref List<Equation_Parameters> population)
 		{
 			List<Equation_Parameters> breeders = getBreedersFromPopulation(ref population);
 //			Program.printPopulationList("Breeders", ref breeders);
-			List<Equation_Parameters> offspring = generateOffspring(ref breeders, ref rand);
+			List<Equation_Parameters> offspring = generateOffspring(breeders);
 //			Program.printPopulationList("Mutated Offspring", ref offspring);
 			population = new List<Equation_Parameters>(offspring.Concat<Equation_Parameters>(breeders));
 			System.Console.Write(".");
@@ -39,7 +42,7 @@ namespace ga
 		{
 			population.Sort();
 //			Program.printPopulationList("Sorted Population", ref population);
-			return population.GetRange(0, population.Count()/2);
+			return population.GetRange(0, (int)(Program.MAX_POPULATION*Program.BREEDER_PERCENT));
 		}
 
 
@@ -49,35 +52,54 @@ namespace ga
 		 * Generates offspring from the list of breeders
 		 * Returns list of new offspring
 		 */
-		private List<Equation_Parameters> generateOffspring(ref List<Equation_Parameters> breeders, ref Random rand)
+		private List<Equation_Parameters> generateOffspring(List<Equation_Parameters> breeders)
 		{
 			List<Equation_Parameters> offspring = new List<Equation_Parameters>();
+			int breed_count = 0;
 
-			for (int count = 0, breed_count=0; count < Program.MAX_POPULATION - breeders.Count(); ++count)
+			Parallel.For(0, (Program.MAX_POPULATION - breeders.Count()), i =>
+			//			for (int count = 0, breed_count=0; count < Program.MAX_POPULATION - breeders.Count(); ++count)
 			{
 				// Cycle through breeders sequentially selecting mating pairs.
 				if (breed_count >= breeders.Count()) { breed_count = 0; }	// start cycling through breeders from the beginning
 				Equation_Parameters P1 = breeders[breed_count++];			// Parent 1
 				if (breed_count >= breeders.Count()) { breed_count = 0; }	// start cycling through breeders from the beginning
 				Equation_Parameters P2 = breeders[breed_count++];			// Parent 2
+//				System.Console.WriteLine("Breed Count = {0}", breed_count);
 
 				// Meiosis
-				Equation_Parameters child = new Equation_Parameters(ref _knownData, ref rand);
-				child.a = (rand.NextDouble() < 0.5) ? P1.a : P2.a;			// 50% chance to take coeff from P1
-				child.b = (rand.NextDouble() < 0.5) ? P1.b : P2.b;			// 50% chance to take coeff from P1
-				child.c = (rand.NextDouble() < 0.5) ? P1.c : P2.c;			// 50% chance to take coeff from P1
-				child.d = (rand.NextDouble() < 0.5) ? P1.d : P2.d;			// 50% chance to take coeff from P1
-				child.e = (rand.NextDouble() < 0.5) ? P1.e : P2.e;			// 50% chance to take coeff from P1
-				child.f = (rand.NextDouble() < 0.5) ? P1.f : P2.f;			// 50% chance to take coeff from P1
-				child.g = (rand.NextDouble() < 0.5) ? P1.g : P2.g;			// 50% chance to take coeff from P1
-				child.h = (rand.NextDouble() < 0.5) ? P1.h : P2.h;			// 50% chance to take coeff from P1
-				child.i = (rand.NextDouble() < 0.5) ? P1.i : P2.i;			// 50% chance to take coeff from P1
-				child.j = (rand.NextDouble() < 0.5) ? P1.j : P2.j;			// 50% chance to take coeff from P1
+				Equation_Parameters child = new Equation_Parameters(ref _knownData, ref this.rand);
+				List<double> new_coeff_a_e = new List<double>();
+				new_coeff_a_e.Add((rand.NextDouble() < 0.5) ? P1.a : P2.a);			// 50% chance to take coeff from P1
+				new_coeff_a_e.Add((rand.NextDouble() < 0.5) ? P1.b : P2.b);			// 50% chance to take coeff from P1
+				new_coeff_a_e.Add((rand.NextDouble() < 0.5) ? P1.c : P2.c);			// 50% chance to take coeff from P1
+				new_coeff_a_e.Add((rand.NextDouble() < 0.5) ? P1.d : P2.d);			// 50% chance to take coeff from P1
+				new_coeff_a_e.Add((rand.NextDouble() < 0.5) ? P1.e : P2.e);			// 50% chance to take coeff from P1
+				new_coeff_a_e.Sort();
+				List<double> new_coeff_f_j = new List<double>();
+				new_coeff_f_j.Add((rand.NextDouble() < 0.5) ? P1.f : P2.f);			// 50% chance to take coeff from P1
+				new_coeff_f_j.Add((rand.NextDouble() < 0.5) ? P1.g : P2.g);			// 50% chance to take coeff from P1
+				new_coeff_f_j.Add((rand.NextDouble() < 0.5) ? P1.h : P2.h);			// 50% chance to take coeff from P1
+				new_coeff_f_j.Add((rand.NextDouble() < 0.5) ? P1.i : P2.i);			// 50% chance to take coeff from P1
+				new_coeff_f_j.Add((rand.NextDouble() < 0.5) ? P1.j : P2.j);			// 50% chance to take coeff from P1
+				new_coeff_f_j.Sort();
+
+				// Update child with sorted coefficients
+				child.a = new_coeff_a_e[0];
+				child.b = new_coeff_a_e[1];
+				child.c = new_coeff_a_e[2];
+				child.d = new_coeff_a_e[3];
+				child.e = new_coeff_a_e[4];
+				child.f = new_coeff_f_j[0];
+				child.g = new_coeff_f_j[1];
+				child.h = new_coeff_f_j[2];
+				child.i = new_coeff_f_j[3];
+				child.j = new_coeff_f_j[4];
 				child.calculate_lmse(ref _knownData);
-
 				offspring.Add(child);
-			}
+			});
 
+//			System.Console.WriteLine("Offspring total = {0}", offspring.Count());
 			// Mutations on offspring
 			mutateOffspring(ref offspring, ref rand);
 

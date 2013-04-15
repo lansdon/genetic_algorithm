@@ -29,13 +29,14 @@ namespace ga
 			this.lmse = 666;
 		}
 
-        public Equation_Parameters(ref List<Coord_Pair> knownData, ref Random rand)
-        {
-            this.id = Program.CHILD_COUNT++;
-            randomize_coefficients(ref rand);
-            lmse = calculate_lmse(ref knownData);
-//			print();
-        }
+		public Equation_Parameters(ref List<Coord_Pair> knownData, ref Random rand)
+		{
+			this.id = Program.CHILD_COUNT++;
+			randomize_coefficients(ref rand);
+			lmse = calculate_lmse(ref knownData);
+			//			print();
+		}
+		
 
 		// Implement the generic CompareTo method 
 		public int CompareTo(Equation_Parameters other)
@@ -83,14 +84,26 @@ namespace ga
 //            System.Console.WriteLine("F={0}\nG={1}\nH={2}\nI={3}\nJ={4}\n", f_j[0], f_j[1], f_j[2], f_j[3], f_j[4]);
         }
 
-
 		public double calculate_lmse(ref List<Coord_Pair> knownData)
+		{
+			return calculate_lmse(ref knownData, false);
+		}
+
+		public double calculate_lmse(ref List<Coord_Pair> knownData, bool saveToFile)
         {
 			double sum = 0;
 			foreach (Coord_Pair kd in knownData)
 			{
 				double calculated = f * Math.Sin(a * kd.X) + g * Math.Sin(b * kd.X) + h * Math.Sin(c * kd.X) + i * Math.Sin(d * kd.X) + j * Math.Sin(e * kd.X);
 				sum += Math.Pow((kd.Y - calculated), 2);
+
+				if (saveToFile)
+				{
+					using (System.IO.StreamWriter file = new System.IO.StreamWriter(Statistics.FILE_BEST_RECORD, true))
+					{
+						file.WriteLine(calculated);
+					}
+				}
 			}
             return sum/knownData.Count();
         }
