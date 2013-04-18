@@ -46,10 +46,10 @@
   <ItemGroup>
     <Compile Include="Coord_Pair.cs" />
     <Compile Include="Equation_Parameters.cs" />
-    <Compile Include="Genetics.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Statistics.cs" />
+    <Compile Include="ThreadSafeAddList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

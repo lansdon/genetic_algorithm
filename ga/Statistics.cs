@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ga
 {
@@ -14,7 +14,6 @@ namespace ga
 		public static string FILE_BEST_GEN_AVGS = "_generation_avgs.txt";
 		public static string FILE_BEST_GEN_BEST = "_generation_best.txt";
 
-//		public static double BEST_LMSE { set; get; }				// Best LMSE Out of any generation
 		public static double mutations { set; get; }				// Total Mutations
 		private List<double> _generation_avgs = new List<double>();	// list of generation avgs
 		private List<double> _generation_best = new List<double>();	// list of generation best
@@ -23,7 +22,6 @@ namespace ga
 
 		public Statistics()
 		{
-//			BEST_LMSE = 666;
 			mutations = 0;
 
 			stopWatch.Start();
@@ -31,9 +29,8 @@ namespace ga
 
 
 		// Keep a record of the best LMSE as well as an array of the best per generation
-		public void doUpdateForGeneration(ref List<Equation_Parameters> population)
+		public void doUpdateForGeneration(List<Equation_Parameters> population)
 		{
-			population.Sort();
 			Equation_Parameters generation_best = population[0];
 			double generation_avg_lmse = 0;
 			for (int count = 0; count < population.Count(); ++count)
@@ -45,7 +42,30 @@ namespace ga
 			if (generation_best.lmse < best_record.lmse) { best_record = generation_best; }		// Update best_lmse
 			_generation_avgs.Add(generation_avg_lmse);
 			_generation_best.Add(generation_best.lmse);
+
+			printLmseMeter();
 		}
+
+
+		public void printLmseMeter()
+		{
+			string meter = "Fitness |";
+			for (int i = 0; i < 10; ++i)
+			{
+				if (i <= (10-(best_record.lmse * 100.0)))
+				{
+					meter += ">";
+				}
+				else
+				{
+					meter += " ";
+				}
+			}
+			meter += string.Format("| {0}", best_record.lmse);
+			System.Console.WriteLine(meter);
+
+		}
+
 
 
 		public void print()
@@ -54,33 +74,25 @@ namespace ga
 			System.Console.WriteLine("Population Cap={0}", Program.MAX_POPULATION);
 			System.Console.WriteLine("Generation Cap={0}", Program.GENERATION_CAP);
 			System.Console.WriteLine("Mutation Rate={0}", Program.MUTATION_RATE);
-			System.Console.WriteLine("Mutation Range= +/-{0}", (Program.MUTATION_RANGE/2));
-			System.Console.WriteLine("Breeder Percent= +/-{0}", Program.BREEDER_PERCENT);
+//			System.Console.WriteLine("Mutation Range= +/-{0}", (Program.MUTATION_RANGE/2));
+			System.Console.WriteLine("Breeder Percent= {0}", Program.BREEDER_PERCENT);
 			System.Console.WriteLine("Total children={0}", Program.CHILD_COUNT);
 			System.Console.WriteLine("Recorded Generations={0}", _generation_best.Count());
 			System.Console.WriteLine("Total Mutations={0}", mutations);
+			System.Console.WriteLine("Min Threads={0}", Program.THREAD_MIN);
 			System.Console.WriteLine("*************************** Top Record **************************", Program.CHILD_COUNT);
 			best_record.print();
 
 			stopWatch.Stop();
 			// Get the elapsed time as a TimeSpan value.
+			stopWatch.Stop();
 			TimeSpan ts = stopWatch.Elapsed;
 
 			// Format and display the TimeSpan value. 
-//			string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-//				ts.Hours, ts.Minutes, ts.Seconds,
-//				ts.Milliseconds / 10);
-//			Console.WriteLine("Elapsed Time: " + elapsedTime);
-			Console.WriteLine("Elapsed Time: " + ts.Seconds);
-
-//			int best_gen = -1;
-//			for (int count = 0; count < _generation_best.Count(); ++count)
-//			{
-//				System.Console.WriteLine("Generation {0} Best = {1}", count, _generation_best[count]);
-//				System.Console.WriteLine("Generation {0} Avg = {1}", count, _generation_avgs[count]);
-//				if (_generation_best[count] == BEST_LMSE) { best_gen = count; }
-//			}
-//			System.Console.WriteLine("Best Generation = {0}",best_gen);
+			string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+				ts.Hours, ts.Minutes, ts.Seconds,
+				ts.Milliseconds / 10);
+			Console.WriteLine("Elapsed Time: {0}", elapsedTime);
 
 		}
 
@@ -141,11 +153,17 @@ namespace ga
 					file.WriteLine("Population Cap={0}", Program.MAX_POPULATION);
 					file.WriteLine("Generation Cap={0}", Program.GENERATION_CAP);
 					file.WriteLine("Mutation Rate={0}", Program.MUTATION_RATE);
-					file.WriteLine("Mutation Range= +/-{0}", (Program.MUTATION_RANGE / 2));
+//					file.WriteLine("Mutation Range= +/-{0}", (Program.MUTATION_RANGE / 2));
 					file.WriteLine("Breeder Percent= +/-{0}", Program.BREEDER_PERCENT);
 					file.WriteLine("Total children={0}", Program.CHILD_COUNT);
 					file.WriteLine("Recorded Generations={0}", _generation_best.Count());
 					file.WriteLine("Total Mutations={0}", mutations);
+					// Format and display the TimeSpan value. 
+					TimeSpan ts = stopWatch.Elapsed;
+					string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+						ts.Hours, ts.Minutes, ts.Seconds,
+						ts.Milliseconds / 10);
+					file.WriteLine("Elapsed Time={0}", elapsedTime);
 				}
 
 				// Generation Averages
@@ -154,16 +172,11 @@ namespace ga
 					_generation_avgs.ForEach(file.WriteLine);
 				}
 
-
 				// Generation Best
 				using (System.IO.StreamWriter file = new System.IO.StreamWriter(FILE_BEST_GEN_BEST))
 				{
 					_generation_best.ForEach(file.WriteLine);
-				}
-				
-
-
-
+				}			
 			}
 			
 
